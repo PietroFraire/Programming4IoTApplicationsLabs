@@ -1,0 +1,183 @@
+{
+  "projectOwner": "Jake Blues",
+  "projectName": "MySmartThingy",
+  "lastUpdate": "2020-03-30 12:58",
+  "broker": {
+    "IP": "test.mosquitto.org",
+    "port": 1883
+  },
+  "devicesList": [
+    {
+      "deviceID": 1,
+      "deviceName": "DHT11",
+      "measureType": [
+        "Temperature",
+        "Humidity"
+      ],
+      "availableServices": [
+        "MQTT",
+        "REST"
+      ],
+      "servicesDetails": [
+        {
+          "serviceType": "MQTT",
+          "topic": [
+            "MySmartThingy/1/temp",
+            "MySmartThingy/1/hum"
+          ]
+        },
+        {
+          "serviceType": "REST",
+          "serviceIP": "dht11.org:8080"
+        }
+      ],
+      "lastUpdate": "2020-03-30"
+    },
+    {
+      "deviceID": 2,
+      "deviceName": "VCNL4010",
+      "measureType": [
+        "Proximity"
+      ],
+      "availableServices": [
+        "MQTT"
+      ],
+      "servicesDetails": [
+        {
+          "serviceType": "MQTT",
+          "topic": [
+            "MySmartThingy/2/proximity"
+          ]
+        }
+      ],
+      "lastUpdate": "2020-03-30"
+    },
+    {
+      "deviceID": 3,
+      "deviceName": "DHT11",
+      "measureType": [
+        "Temperature"
+      ],
+      "availableServices": [
+        "REST"
+      ],
+      "servicesDetails": [
+        {
+          "serviceType": "MQTT",
+          "topic": [
+            "MySmartThingy/3/temp",
+            "MySmartThingy/3/hum"
+          ]
+        }
+      ],
+      "lastUpdate": "2020-03-30"
+    }
+  ],
+  "usersList": [
+    {
+      "userName": "Jake Blues",
+      "userID": 1,
+      "chatID": 123456,
+      "houses": [
+        {
+          "houseID": 1
+        }
+      ]
+    },
+    {
+      "userName": "Elwood Blues",
+      "userID": 2,
+      "chatID": 678901,
+      "houses": [
+        {
+          "houseID": 2
+        },
+        {
+          "houseID": 3
+        }
+      ]
+    }
+  ],
+  "housesList": [
+    {
+      "userID": 1,
+      "houseID": 1,
+      "devicesList": [
+        {
+          "deviceID": 1,
+          "deviceName": "DHT11",
+          "measureType": [
+            "Temperature",
+            "Humidity"
+          ],
+          "availableServices": [
+            "MQTT",
+            "REST"
+          ],
+          "servicesDetails": [
+            {
+              "serviceType": "MQTT",
+              "topic": [
+                "MySmartThingy/1/temp",
+                "MySmartThingy/1/hum"
+              ]
+            },
+            {
+              "serviceType": "REST",
+              "serviceIP": "192.1.1.1:8080"
+            }
+          ],
+          "lastUpdate": "2020-03-30"
+        }
+      ]
+    },
+    {
+      "userID": 2,
+      "houseID": 2,
+      "devicesList": [
+        {
+          "deviceID": 2,
+          "deviceName": "VCNL4010",
+          "measureType": [
+            "Proximity"
+          ],
+          "availableServices": [
+            "MQTT"
+          ],
+          "servicesDetails": [
+            {
+              "serviceType": "MQTT",
+              "topic": [
+                "MySmartThingy/2/proximity"
+              ]
+            }
+          ],
+          "lastUpdate": "2020-03-30"
+        }
+      ]
+    },
+    {
+      "userID": 2,
+      "houseID": 3,
+      "devicesList": [
+        {
+          "deviceID": 3,
+          "deviceName": "DHT11",
+          "measureType": [
+            "Temperature"
+          ],
+          "availableServices": [
+            "REST"
+          ],
+          "servicesDetails": [
+            {
+              "serviceType": "REST",
+              "serviceIP": "192.1.1.3:8080"
+            }
+          ],
+          "lastUpdate": "2020-03-30"
+        }
+      ]
+    }
+  ]
+}

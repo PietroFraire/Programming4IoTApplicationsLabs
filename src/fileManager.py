@@ -1,4 +1,5 @@
 import json
+from pprint import pprint
 
 class FileManager:
     """
@@ -20,17 +21,19 @@ class FileManager:
         for i in range(len(self.dictJFile['devicesList'])):
             if self.dictJFile['devicesList'][i]['deviceName'] == name:
 
-                print(f"Info sensor {self.dictJFile['devicesList'][i]['deviceID']}: {self.dictJFile['devicesList'][i]['deviceName']}")
-                print(f'deviceName: {self.dictJFile['devicesList'][i]['deviceName']} \n')
-                print(f'deviceID: {self.dictJFile['devicesList'][i]['deviceID']} \n')
-                print(f'measureType: {self.dictJFile['devicesList'][i]['measureType']} \n')
-                print(f'availableServices: {self.dictJFile['devicesList'][i]['availableServices']} \n')
-                print(f'servicesDetails: {self.dictJFile['devicesList'][i]['servicesDetails']} \n')
-                print(f'lastUpdate: {self.dictJFile['devicesList'][i]['lastUpdate']} \n')
-                print("---------------------------")
+                # print(f"Info sensor {self.dictJFile['devicesList'][i]['deviceID']}: {self.dictJFile['devicesList'][i]['deviceName']}")
+                # print(f'deviceName: {self.dictJFile['devicesList'][i]['deviceName']} \n')
+                # print(f'deviceID: {self.dictJFile['devicesList'][i]['deviceID']} \n')
+                # print(f'measureType: {self.dictJFile['devicesList'][i]['measureType']} \n')
+                # print(f'availableServices: {self.dictJFile['devicesList'][i]['availableServices']} \n')
+                # print(f'servicesDetails: {self.dictJFile['devicesList'][i]['servicesDetails']} \n')
+                # print(f'lastUpdate: {self.dictJFile['devicesList'][i]['lastUpdate']} \n')
+                # print("---------------------------")
 
-        else:
-            print(f"The sensor '{name}' does not exist in sensor list")
+                pprint(self.dictJFile['devicesList'][i])
+
+        # else:
+        #     print(f"The sensor '{name}' does not exist in sensor list")
 
     def searchByID(self, id:int):
         """
@@ -47,5 +50,5 @@ if __name__ == "__main__":
 
     sensorFile = FileManager()
 
-    sensorFile.searchByName('projectOwner')
+    sensorFile.searchByName('DHT11')
     sensorFile.searchByName('DHT1111')

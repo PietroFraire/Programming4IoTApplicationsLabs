@@ -1,14 +1,19 @@
 import json
 from pprint import pprint
+from Device import Device
 
 class FileManager:
     """
     class for managing json files \n
     file path for json sensorfile is hardcoded
     """
-    def __init__(self):
-        self.filePath = '../data/catalog.json'
+    def __init__(self, filePath = '../data/catalog.json'):
+        self.filePath = filePath
         self.dictJFile = json.load(open(self.filePath))
+
+        devicesList = self.dictJFile["devicesList"]
+        self.devices = {d["deviceID"] : Device(d["deviceID"], d["deviceName"], d["measureType"],
+                                                d["availableServices"], d["servicesDetails"], d["lastUpdate"]) for d in devicesList }
     
 
     def searchByName(self, name:str):
@@ -17,23 +22,11 @@ class FileManager:
         Input param: str name \n
         Output: str value
         """
-
-        for i in range(len(self.dictJFile['devicesList'])):
-            if self.dictJFile['devicesList'][i]['deviceName'] == name:
-
-                # print(f"Info sensor {self.dictJFile['devicesList'][i]['deviceID']}: {self.dictJFile['devicesList'][i]['deviceName']}")
-                # print(f'deviceName: {self.dictJFile['devicesList'][i]['deviceName']} \n')
-                # print(f'deviceID: {self.dictJFile['devicesList'][i]['deviceID']} \n')
-                # print(f'measureType: {self.dictJFile['devicesList'][i]['measureType']} \n')
-                # print(f'availableServices: {self.dictJFile['devicesList'][i]['availableServices']} \n')
-                # print(f'servicesDetails: {self.dictJFile['devicesList'][i]['servicesDetails']} \n')
-                # print(f'lastUpdate: {self.dictJFile['devicesList'][i]['lastUpdate']} \n')
-                # print("---------------------------")
-
-                pprint(self.dictJFile['devicesList'][i])
-
-        # else:
-        #     print(f"The sensor '{name}' does not exist in sensor list")
+        l = []
+        for d in self.devices.values():
+            if d.deviceName == name:
+                l.append(d)
+        return l
 
     def searchByID(self, id:int):
         """
@@ -42,13 +35,24 @@ class FileManager:
         Output: str value
         """
 
-        for k, v in self.dictJFile.items():
-            if (k=='deviceID' and v==id):
-                print(f'{k} {v}')
+        if id in self.devices:
+            return self.devices[id]
+        return None
 
 if __name__ == "__main__":
 
     sensorFile = FileManager()
 
-    sensorFile.searchByName('DHT11')
-    sensorFile.searchByName('DHT1111')
+    d1 = sensorFile.searchByName('DHT11')
+    for d in d1:
+        print(d.__str__())
+        print("---------------")
+    d2 = sensorFile.searchByName('DHT1111')
+    print(d2.__str__())
+
+
+    d3 = sensorFile.searchByID(2)
+    print(d3.__str__())
+
+    d4 = sensorFile.searchByID(4)
+    print(d4.__str__())

@@ -1,4 +1,4 @@
-class Device():
+class Device:
 
     def __init__(self, deviceID, deviceName, 
                  measureType, avaiableServices, servicesDetails, lastUpdate):
@@ -23,7 +23,7 @@ class Device():
         for s in self.servicesDetails:
             for key, value in s.items():
                 if isinstance(value, list):
-                    buf.append(f"\t{key:}")
+                    buf.append(f"\t{key}:")
                     for e in value:
                         buf.append(f"\t- {e}")
                 else:

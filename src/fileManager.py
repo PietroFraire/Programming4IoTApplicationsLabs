@@ -69,8 +69,6 @@ class FileManager:
                 "servicesDetails": device.servicesDetails,
                 "lastUpdate": device.lastUpdate
             })
-
-
             return True
         else:
             print("Device already exists!")
@@ -84,7 +82,6 @@ class FileManager:
                         d["servicesDetails"] = device.servicesDetails
                         d["lastUpdate"] = device.lastUpdate
                         break
-
                 return True
             return False
     

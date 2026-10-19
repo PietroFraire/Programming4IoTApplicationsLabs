@@ -11,6 +11,7 @@ class FileManager:
     
 
     def searchByName(self, name:str):
+        found = 0
         """
         Function for searching for a device \n
         Input param: str name \n
@@ -19,18 +20,19 @@ class FileManager:
 
         for i in range(len(self.dictJFile['devicesList'])):
             if self.dictJFile['devicesList'][i]['deviceName'] == name:
-
+                found = 1
                 print(f"Info sensor {self.dictJFile['devicesList'][i]['deviceID']}: {self.dictJFile['devicesList'][i]['deviceName']}")
-                print(f'deviceName: {self.dictJFile['devicesList'][i]['deviceName']} \n')
-                print(f'deviceID: {self.dictJFile['devicesList'][i]['deviceID']} \n')
-                print(f'measureType: {self.dictJFile['devicesList'][i]['measureType']} \n')
-                print(f'availableServices: {self.dictJFile['devicesList'][i]['availableServices']} \n')
-                print(f'servicesDetails: {self.dictJFile['devicesList'][i]['servicesDetails']} \n')
-                print(f'lastUpdate: {self.dictJFile['devicesList'][i]['lastUpdate']} \n')
+                print(f"deviceName: {self.dictJFile['devicesList'][i]['deviceName']} \n")
+                print(f"deviceID: {self.dictJFile['devicesList'][i]['deviceID']} \n")
+                print(f"measureType: {self.dictJFile['devicesList'][i]['measureType']} \n")
+                print(f"availableServices: {self.dictJFile['devicesList'][i]['availableServices']} \n")
+                print(f"servicesDetails: {self.dictJFile['devicesList'][i]['servicesDetails']} \n")
+                print(f"lastUpdate: {self.dictJFile['devicesList'][i]['lastUpdate']} \n")
                 print("---------------------------")
-
-        else:
+        
+        if not found:
             print(f"The sensor '{name}' does not exist in sensor list")
+
 
     def searchByID(self, id:int):
         """
@@ -47,5 +49,5 @@ if __name__ == "__main__":
 
     sensorFile = FileManager()
 
-    sensorFile.searchByName('projectOwner')
-    sensorFile.searchByName('DHT1111')
+    sensorFile.searchByName('VCNL4010')
+    sensorFile.searchByName('DHT11')

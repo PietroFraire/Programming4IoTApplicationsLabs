@@ -33,4 +33,18 @@ class Device:
 
         return "\n".join(buf)
 
+
+    def to_dict(self):
+
+        d = {}
+
+        d["deviceID"] = self.deviceID
+        d["deviceName"] = self.deviceName
+        d["measureType"] = self.measureType
+        d["availableServices"] = self.avaiableServices
+        d["servicesDetails"] = self.servicesDetails
+        d["lastUpdate"] = self.lastUpdate
+
+        return d
+
     

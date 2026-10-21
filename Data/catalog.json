@@ -71,6 +71,25 @@
         }
       ],
       "lastUpdate": "2020-03-30"
+    },
+    {
+      "deviceID": 4,
+      "deviceName": "pietro",
+      "measureType": [
+        "meters"
+      ],
+      "availableServices": [
+        "REST"
+      ],
+      "servicesDetails": [
+        {
+          "serviceType": "REST",
+          "ip": [
+            "192.0.0.0"
+          ]
+        }
+      ],
+      "lastUpdate": "2026-10-21 17:21"
     }
   ],
   "usersList": [

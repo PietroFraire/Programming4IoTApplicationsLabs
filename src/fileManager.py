@@ -58,6 +58,20 @@ class FileManager:
                 return d
         return None
 
+    def searchByService(self, service):
+        dev = []
+        for d in self.devicelist:
+            if service in d.availableServices:
+                dev.append(d)
+        return dev
+    
+    def searchByMeasureType(self, measureType):
+        dev = []
+        for d in self.devicelist:
+            if measureType in d.measureType:
+                dev.append(d)
+        return dev
+
         
 
 if __name__ == "__main__":
@@ -78,3 +92,17 @@ if __name__ == "__main__":
         print(result)
     else:
         print(f"Sorry, no device id '{device_id}' was found.")
+
+    service = input("Enter service: ")
+    listdev = manager.searchByService(service)
+    if not listdev:
+        print(f"No device with this service type {service}")
+    else:
+        print(listdev)
+
+    measureType = input("Enter measure type: ")
+    listdev = manager.searchByMeasureType(measureType)
+    if not listdev:
+        print(f"No device with this measure type {measureType}")
+    else:
+        print(listdev)

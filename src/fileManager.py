@@ -71,38 +71,71 @@ class FileManager:
             if measureType in d.measureType:
                 dev.append(d)
         return dev
+    
+    def printAll(self):
+        return json.dumps(self.catalog)
+    
+    def save_catalog(self):
+        with open(self.filepath, "w") as file:
+            json.dump(self.catalog, file, indent=4)
 
         
 
 if __name__ == "__main__":
     manager = FileManager()
-    
-    device_name = input("Enter device name: ").strip()
-    result = manager.searchByName(device_name)
-    if result is not None:
-        print("Device found: ")
-        print(result)
-    else:
-        print(f"Sorry, no device named '{device_name}' was found.")
 
-    device_id = int(input("Enter device id: ").strip())
-    result = manager.searchByID(device_id)
-    if result is not None:
-        print("Device found: ")
-        print(result)
-    else:
-        print(f"Sorry, no device id '{device_id}' was found.")
+    while True:
+        # 1. Print the menu options
+        print("\n--- Device Manager Menu ---")
+        print("1. Search by Name")
+        print("2. Search by ID")
+        print("3. Search by Service")
+        print("4. Search by Measure Type")
+        print("5. Print all devices")
+        print("6. Save and Exit")
 
-    service = input("Enter service: ")
-    listdev = manager.searchByService(service)
-    if not listdev:
-        print(f"No device with this service type {service}")
-    else:
-        print(listdev)
 
-    measureType = input("Enter measure type: ")
-    listdev = manager.searchByMeasureType(measureType)
-    if not listdev:
-        print(f"No device with this measure type {measureType}")
-    else:
-        print(listdev)
+        choice = input("\nEnter your choice (1-6): ").strip()
+
+        match choice:
+            case '1':
+                device_name = input("Enter device name: ").strip()
+                result = manager.searchByName(device_name)
+                if result is not None:
+                    print("Device found: ")
+                    print(result)
+                else:
+                    print(f"Sorry, no device named '{device_name}' was found.")
+  
+            case '2':
+                try:
+                    device_id = int(input("Enter device id: ").strip())
+                    result = manager.searchByID(device_id)
+                    if result is not None:
+                        print("Device found: ")
+                        print(result)
+                    else:
+                        print(f"Sorry, no device id '{device_id}' was found.")
+                except ValueError:
+                    print("Error: Please enter a valid integer.")
+
+            case '3':
+                service = input("Enter service: ").strip()
+                listdev = manager.searchByService(service)
+                print(listdev if listdev else f"No device with this service type {service}")
+
+            case '4':
+                measureType = input("Enter measure type: ").strip()
+                listdev = manager.searchByMeasureType(measureType)
+                print(listdev if listdev else f"No device with this measure type {measureType}")
+            
+            case '5':
+                print(manager.printAll())
+
+            case '6':
+                manager.save_catalog()
+                print("Catalog saved successfully. Exiting program...")
+                break
+        
+            case _:
+                print("Invalid choice. Please enter a number between 1 and 6.")

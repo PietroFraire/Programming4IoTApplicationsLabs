@@ -51,15 +51,30 @@ class FileManager:
             if(d.deviceName == deviceName):
                 return d
         return None
+    
+    def searchByID(self, deviceID):
+        for d in self.devicelist:
+            if(d.deviceID == deviceID):
+                return d
+        return None
+
         
 
 if __name__ == "__main__":
     manager = FileManager()
     
-    device_name = input("Enter device name: ")
+    device_name = input("Enter device name: ").strip()
     result = manager.searchByName(device_name)
     if result is not None:
         print("Device found: ")
         print(result)
     else:
         print(f"Sorry, no device named '{device_name}' was found.")
+
+    device_id = int(input("Enter device id: ").strip())
+    result = manager.searchByID(device_id)
+    if result is not None:
+        print("Device found: ")
+        print(result)
+    else:
+        print(f"Sorry, no device id '{device_id}' was found.")

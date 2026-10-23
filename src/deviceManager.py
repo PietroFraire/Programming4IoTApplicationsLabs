@@ -23,7 +23,7 @@ class DeviceManager:
         else: return cherrypy.HTTPError(400, "Invalid request")
 
     def PUT(self, *uri, **_params):
-        raise cherrypy.HTTPError(501, "PUT is not implemented")
+        pass
 
     def DELETE(self, *uri, **_params):
-        raise cherrypy.HTTPError(501, "DELETE is not implemented")
+        pass

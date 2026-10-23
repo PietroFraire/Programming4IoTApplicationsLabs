@@ -28,7 +28,7 @@ class DeviceManager:
         if len(uri) == 2 and uri[0] == "updateDevice":
             body = cherrypy.request.json            
             deviceID=uri[1]
-            list = self.deviceList["devicesList"]
+            list = self.devices["devicesList"]
             found = False
             
             for d in list:
@@ -44,7 +44,7 @@ class DeviceManager:
                 raise cherrypy.HTTPError(404, "Device not found")            
             
             with open("device.json", "w", encoding="utf-8") as f:
-                json.dump(self.deviceList, f, indent=4, ensure_ascii=False)        
+                json.dump(self.devices, f)
             return self.deviceList
         
         raise cherrypy.HTTPError(400, "Wrong endpoint. ")

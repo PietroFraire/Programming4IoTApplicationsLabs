@@ -30,7 +30,7 @@ class DeviceManager:
                 dev.remove(d)
 
                 with open(self.path, "w", encoding="utf-8") as f:
-                    json.dumps(self.devices, f)
+                    json.dump(self.devices, f)
                     
                 return json.dumps(self.devices).encode()
 

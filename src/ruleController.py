@@ -1,4 +1,5 @@
 from rules import TemperatureRule, LightRule
+import random
 
 class RuleController():
 
@@ -33,6 +34,31 @@ class RuleController():
         r.updateThreshold(threshold)
         return r
 
+    def delete(self, name):
+        if name not in self.rules:
+            print("Unknown rule")
+            return None 
+        
+        return self.rules.pop(name)
+
+    def printRules(self):
+        for r in list(self.rules.values()):
+            print(str(r))
+
+    def evaluete(self, type, current):
+
+        for r in self.rules.values():
+            if isinstance(r, TemperatureRule) and type=="t":
+                if r.evaluete(current):
+                    print(f"Rule {r.name} respected")
+                else:
+                    print(f"Rule {r.name} not respected")
+            if isinstance(r, LightRule) and type=="l":
+                if r.evaluete(current):
+                    print(f"Rule {r.name} respected")
+                else:
+                    print(f"Rule {r.name} not respected")
+
     def printMenu(self):
         print("--Menu-----------")
         print("- add: add anew rule")
@@ -66,11 +92,21 @@ if __name__ == "__main__":
 
                 controller.update(name, thresh)
             case "delete":
-                pass
+                name = input("Rule name: ")
+                controller.delete(name)
             case "evaluete":
-                pass
+                type = input("Intert type <t/l>: ")
+                if type == "t":
+                    current = random.randint(15, 30)
+                elif type =="l":
+                    current = random.randint(0, 100)
+                else:
+                    print("Unknown command")
+                    continue
+                print(f"Current: {current}")
+                controller.evaluete(type, current)
             case "rules":
-                pass
+                controller.printRules()
             case "exit":
                 print("It was a pleasure ;)")
                 break

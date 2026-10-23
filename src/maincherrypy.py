@@ -1,5 +1,6 @@
 import cherrypy
 from deviceManager import DeviceManager
+import os
 
 if __name__=="__main__":
     conf={
@@ -20,6 +21,6 @@ if __name__=="__main__":
         }, 
     }
 
-    cherrypy.tree.mount(deviceManager(),'/',conf)
+    cherrypy.tree.mount(DeviceManager(),'/',conf)
     cherrypy.engine.start()
     cherrypy.engine.block()

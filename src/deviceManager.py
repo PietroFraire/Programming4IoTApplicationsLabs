@@ -26,14 +26,20 @@ class DeviceManager:
             return json.dumps(self.devices)
         elif (len(uri)) == 1 and uri[0] == "addDevice":
             data = json.loads(cherrypy.request.body.read())
-            self.devices["devicesList"].append(data)
+            deviceID = data["deviceID"]
+            found = False
+            for d in self.devices["devicesList"]:
+                if d["deviceID"] == deviceID:
+                    found = True
+                    raise cherrypy.HTTPError(409, "DeviceID already exist. ")
+            if not found:
+                self.devices["devicesList"].append(data)
             with open(self.path, "w", encoding="utf-8") as f:
                 json.dump(self.devices, f, indent=4, ensure_ascii=False)
             return json.dumps(self.devices)
-        else: return cherrypy.HTTPError(400, "Invalid request")
+        else: 
+            raise cherrypy.HTTPError(400, "Invalid request")
 
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()  
     def PUT(self, *uri, **param):
         if len(uri) <= 0:
             raise cherrypy.HTTPError(400, "The URL is wrong. ")
@@ -41,10 +47,9 @@ class DeviceManager:
         if len(uri) == 2 and uri[0] == "updateDevice":
             body = cherrypy.request.json            
             deviceID=uri[1]
-            list = self.devices["devicesList"]
             found = False
             
-            for d in list:
+            for d in self.devices["devicesList"]:
                 if d["deviceID"] == deviceID:
                     d["deviceName"] = body["deviceName"] 
                     d["measureType"] = body["measureType"]

@@ -8,6 +8,8 @@ class DeviceManager:
 
     def __init__(self, path = "../Data/devices.json"):
         self.path = path
+        self.devices = json.load(open(path))
+
         with open(path, "r") as file:
             self.devices = json.load(file)
 
@@ -62,6 +64,10 @@ class DeviceManager:
         for d in dev:
             if d["deviceID"] == id:
                 dev.remove(d)
+
+                with open(self.path, "w", encoding="utf-8") as f:
+                    json.dump(self.devices, f)
+                    
                 return json.dumps(self.devices).encode()
 
         raise cherrypy.HTTPError(404, "Device not found")

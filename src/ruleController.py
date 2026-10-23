@@ -1,114 +1,148 @@
-from rules import TemperatureRule, LightRule
-import random
+#manage and control temperature and lights of the home.
+class ConditionRule:
 
-class RuleController():
+    def __init__(self, rule_name, threshold):
+        self.rule_name = rule_name
+        self.threshold = float(threshold)
 
+
+    def evaluate(self):
+        pass
+
+class TemperatureRule(ConditionRule):
+
+    def evaluate(self, current_temp):
+        if current_temp > self.threshold:
+            return True 
+        return False
+
+class LightRule(ConditionRule):
+        
+    def evaluate(self, current_light):
+        if current_light < self.threshold:
+            return True
+        return False
+
+
+class RuleController:
     def __init__(self):
         self.rules = {}
 
-    def add(self, type, name, threshold:float):
-
-        if name in self.rules:
-            print("Rule already existing")
-            return None
-        
-        if type == "t":
-            r = TemperatureRule(name, threshold)
-            self.rules[name] = r
-            return r
-        elif type == "l":
-            r = LightRule(name, threshold)
-            self.rules[name] = r
-            return r
+    def add(self, rule_name, rule_type, threshold):
+        if rule_type.lower() == "temperature":
+            self.rules[rule_name] = TemperatureRule(rule_name, threshold)
+            print(f"Added Temperature rule: '{rule_name}' at {threshold}°")
+        elif rule_type.lower() == "light":
+            self.rules[rule_name] = LightRule(rule_name, threshold)
+            print(f"Added Light rule: '{rule_name}' at {threshold}")
         else:
-            print("Unknown type")
-            return None
+            print("Error: Rule type must be 'temperature' or 'light'.")
+    
+    def update(self, rule_name, new_threshold):
+        if rule_name in self.rules:
+            self.rules[rule_name].threshold = float(new_threshold)
+            print(f"Rule '{rule_name}' updated to new threshold: {new_threshold}")
+        else:
+            print(f"Error: Rule '{rule_name}' not found.")
+    
+    def delete(self, rule_name):
+        if rule_name in self.rules:
+            del self.rules[rule_name]
+            print(f"Rule '{rule_name}' deleted.")
+        else:
+            print(f"Error: Rule '{rule_name}' not found.")
+    
+    def print_rules(self):
+        if not self.rules:
+            print("No rules active")
+        else:
+            print("\n--- Active Rules ---")
+            for name, rule in self.rules.items():
+                # type(rule).__name__ is a handy trick to print the class name 
+                print(f"- {name} ({type(rule).__name__}): Threshold = {rule.threshold}")
 
-    def update(self, name, threshold):
+    def evaluate(self, current_temp=None, current_light=None):
+        print(f"\n--- Evaluating Sensor Data (Temp: {current_temp}, Light: {current_light}) ---")
 
-        if name not in self.rules:
-            print("Unknown rule")
-            return None 
+        for name, rule in self.rules.items():
+            if isinstance(rule, TemperatureRule) and current_temp is not None:
+                triggered = rule.evaluate(current_temp)
+                state = "TRIGGERED (TOO HOT)!" if triggered else "normal"
+                print(f"Rule '{name}': {state}")
+            elif isinstance(rule, LightRule) and current_light is not None:
+                triggered = rule.evaluate(current_light)
+                state = "TRIGGERED (TOO DARK!)" if triggered else "normal"
+                print(f"Rule '{name}: {state}")
 
-        r = self.rules[name]
-        r.updateThreshold(threshold)
-        return r
 
-    def delete(self, name):
-        if name not in self.rules:
-            print("Unknown rule")
-            return None 
-        
-        return self.rules.pop(name)
 
-    def printRules(self):
-        for r in list(self.rules.values()):
-            print(str(r))
-
-    def evaluete(self, type, current):
-
-        for r in self.rules.values():
-            if isinstance(r, TemperatureRule) and type=="t":
-                if r.evaluete(current):
-                    print(f"Rule {r.name} respected")
-                else:
-                    print(f"Rule {r.name} not respected")
-            if isinstance(r, LightRule) and type=="l":
-                if r.evaluete(current):
-                    print(f"Rule {r.name} respected")
-                else:
-                    print(f"Rule {r.name} not respected")
-
-    def printMenu(self):
-        print("--Menu-----------")
-        print("- add: add anew rule")
-        print("- update: update an existing rule")
-        print("- delete: delete an existing rule")
-        print("- evaluete: evaluete current temperature or light")
-        print("- rules: print the existing rules")
-        print("- exit: close the program")
             
+
+
 
 if __name__ == "__main__":
 
     controller = RuleController()
 
     while True:
-
-        controller.printMenu()
-
-        command = input("select command: ")
+        # 1. Print the menu options
+        print("\n--- Rule controller Menu ---")
+        print("1. add")
+        print("2. update")
+        print("3. delete")
+        print("4. evaluate")
+        print("5. rules")
+        print("6. exit")
+        
+        command = input("Enter command: ").strip().lower()
 
         match command:
-            case "add":
-                type = input("Rule type <t/l>:")
-                name = input("Rule name: ")
-                thresh = float(input("Rule threshold: "))
+            case '1':
+                name = input("Enter a name for this rule (e.g. 'LivingRoomTemp'): ").strip()
+                r_type = input("Enter rule type ('temperature' or 'light'): ").strip()
+                try:
+                    threshold = float(input("Enter threshold value: ").strip())
+                    controller.add(name, r_type, threshold)
+                except ValueError:
+                    print("Error: Threshold must be a number.")
 
-                controller.add(type, name, thresh)
-            case "update":
-                name = input("Rule name: ")
-                thresh = float(input("New rule threshold: "))
+            case '2':
+                name = input("Enter the name of the rule to update: ").strip()
+                try:
+                    new_threshold = float(input("Enter new threshold value: ").strip())
+                    controller.update(name, new_threshold)
+                except ValueError:
+                    print("Error: Threshold must be a number.")
 
-                controller.update(name, thresh)
-            case "delete":
-                name = input("Rule name: ")
+            case '3':
+                name = input("Enter the name of the rule to delete: ").strip()
                 controller.delete(name)
-            case "evaluete":
-                type = input("Intert type <t/l>: ")
-                if type == "t":
-                    current = random.randint(15, 30)
-                elif type =="l":
-                    current = random.randint(0, 100)
-                else:
-                    print("Unknown command")
-                    continue
-                print(f"Current: {current}")
-                controller.evaluete(type, current)
-            case "rules":
-                controller.printRules()
-            case "exit":
-                print("It was a pleasure ;)")
+
+            case '4':
+                print("Enter sensor readings (Press ENTER to skip a sensor):")
+                temp_input = input("Enter current temperature: ").strip()
+                light_input = input("Enter current light level: ").strip()
+
+                try:
+                    cur_temp = float(temp_input) if temp_input else None
+                    cur_light = float(light_input) if light_input else None
+                    controller.evaluate(cur_temp, cur_light)
+
+                    # Prevent them from skipping both
+                    if cur_temp is None and cur_light is None:
+                        print("Error: You must provide at least one measurement.")
+                    else:
+                        controller.evaluate(cur_temp, cur_light)
+
+                except ValueError:
+                    print("Error: Sensor readings must be numbers.")
+
+            case '5':
+                controller.print_rules()
+
+            case '6':
+                print("Closing program...")
                 break
             case _:
-                print("Uknown command")
+                print("Invalid command. Please try again.")
+

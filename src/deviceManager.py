@@ -18,10 +18,8 @@ class DeviceManager:
             return json.dumps(self.devices)
         elif (len(uri)) == 1 and uri[0] == "addDevice":
             data = json.loads(cherrypy.request.body.read())
-            self.devices.append(data)
-            with open(self.path, "w") as file:
-                json.dump(self.devices, file)
-            return json.dumps({"message": "Device added successfully"})
+            self.devices["devicesList"].append(data)
+            return json.dumps(self.devices)
         else: return cherrypy.HTTPError(400, "Invalid request")
 
     def PUT(self, *uri, **_params):

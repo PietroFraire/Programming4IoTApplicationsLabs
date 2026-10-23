@@ -1,18 +1,27 @@
 import cherrypy
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import requests
 >>>>>>> f316668c7341fe5ae98903c1aac13116847cb553
+=======
+import requests
+>>>>>>> 39fae669a71f4ef964489e4201d6eb985c50136f
 import json
 
 # main is the maincherrypy to check if it works, run maincherrypy
 class DeviceManager:
 <<<<<<< HEAD
+<<<<<<< HEAD
     exposed = True
+=======
+    exposed=True
+>>>>>>> 39fae669a71f4ef964489e4201d6eb985c50136f
 
     def __init__(self, path = "../Data/devices.json"):
         with open(path, "r") as file:
             self.devices = json.load(file)
+<<<<<<< HEAD
 
 
     def GET(self, *uri, **_params):
@@ -43,6 +52,8 @@ class DeviceManager:
 
         with open(path, "r") as file:
             self.devices = json.load(file)
+=======
+>>>>>>> 39fae669a71f4ef964489e4201d6eb985c50136f
 
     def GET(self, *uri, **param):
         if len(uri)==0:
@@ -52,8 +63,14 @@ class DeviceManager:
         else:
             raise cherrypy.HTTPError(400, "Bad Request")
 
-    def POST():
-        pass
+    def POST(self, *uri, **_params):
+        if (len(uri)) == 0:
+            return json.dumps(self.devices)
+        elif (len(uri)) == 1 and uri[0] == "addDevice":
+            data = json.loads(cherrypy.request.body.read())
+            self.devices["devicesList"].append(data)
+            return json.dumps(self.devices)
+        else: return cherrypy.HTTPError(400, "Invalid request")
 
     def PUT(self, *uri, **param):
         if len(uri) <= 0:
@@ -100,4 +117,7 @@ class DeviceManager:
                 return json.dumps(self.devices).encode()
 
         raise cherrypy.HTTPError(404, "Device not found")
+<<<<<<< HEAD
 >>>>>>> f316668c7341fe5ae98903c1aac13116847cb553
+=======
+>>>>>>> 39fae669a71f4ef964489e4201d6eb985c50136f

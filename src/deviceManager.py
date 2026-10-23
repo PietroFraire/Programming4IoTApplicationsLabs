@@ -17,7 +17,7 @@ class DeviceManager:
         if len(uri)==0:
             return open("../Data/index.html") 
         elif len(uri) == 1 and uri[0] == "devicesList":
-                return json.dumps(self.devices)
+            return json.dumps(self.devices)
         else:
             raise cherrypy.HTTPError(400, "Bad Request")
 

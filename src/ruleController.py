@@ -28,6 +28,18 @@ class RuleController:
     def __init__(self):
         self.rules = {}
 
+    def GET(self, *uri, **param):
+        pass
+
+    def POST(self, *uri, **param):
+        pass
+
+    def PUT(self, *uri, **param):
+        pass
+
+    def DELETE(self, *uri, **param):
+        pass
+
     def add(self, rule_name, rule_type, threshold):
         if rule_type.lower() == "temperature":
             self.rules[rule_name] = TemperatureRule(rule_name, threshold)
@@ -73,11 +85,6 @@ class RuleController:
                 triggered = rule.evaluate(current_light)
                 state = "TRIGGERED (TOO DARK!)" if triggered else "normal"
                 print(f"Rule '{name}: {state}")
-
-
-
-            
-
 
 
 if __name__ == "__main__":

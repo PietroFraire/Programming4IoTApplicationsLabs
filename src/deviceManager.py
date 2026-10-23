@@ -7,6 +7,7 @@ class DeviceManager:
     exposed=True
 
     def __init__(self, path = "../Data/devices.json"):
+        self.path = path
         with open(path, "r") as file:
             self.devices = json.load(file)
 
@@ -21,6 +22,8 @@ class DeviceManager:
     def POST():
         pass
 
+    @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()  
     def PUT(self, *uri, **param):
         if len(uri) <= 0:
             raise cherrypy.HTTPError(400, "The URL is wrong. ")
@@ -43,9 +46,9 @@ class DeviceManager:
             else:
                 raise cherrypy.HTTPError(404, "Device not found")            
             
-            with open("device.json", "w", encoding="utf-8") as f:
-                json.dump(self.devices, f)
-            return self.deviceList
+            with open(self.path, "w", encoding="utf-8") as f:
+                json.dump(self.devices, f, indent=4, ensure_ascii=False)
+            return self.devices
         
         raise cherrypy.HTTPError(400, "Wrong endpoint. ")
 

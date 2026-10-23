@@ -1,0 +1,1 @@
+{"devicesList": [{"deviceName": "pippo", "measureType": "hum", "deviceID": "1", "unit": "C"}, {"deviceName": "topolino", "measureType": "hum", "deviceID": "2", "unit": "%"}, {"deviceName": "pluto", "measureType": "motion", "deviceID": "3", "unit": "bool"}, {"deviceID": "4", "deviceName": "rafa", "measureType": "temp", "unit": "degrees"}]}

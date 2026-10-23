@@ -21,8 +21,14 @@ class DeviceManager:
         else:
             raise cherrypy.HTTPError(400, "Bad Request")
 
-    def POST():
-        pass
+    def POST(self, *uri, **_params):
+        if (len(uri)) == 0:
+            return json.dumps(self.devices)
+        elif (len(uri)) == 1 and uri[0] == "addDevice":
+            data = json.loads(cherrypy.request.body.read())
+            self.devices["devicesList"].append(data)
+            return json.dumps(self.devices)
+        else: return cherrypy.HTTPError(400, "Invalid request")
 
     def PUT(self, *uri, **param):
         if len(uri) <= 0:

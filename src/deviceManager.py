@@ -23,5 +23,16 @@ class DeviceManager:
     def PUT():
         pass
 
-    def DELETE():
-        pass
+    def DELETE(self, *uri, **param):
+
+        if len(uri)!=2 or uri[0] != "deleteDevice":
+            raise cherrypy.HTTPError(400, "Bad request")
+        
+        dev = self.devices["devicesList"]
+        id = uri[1]
+        for d in dev:
+            if d["deviceID"] == id:
+                dev.remove(d)
+                return json.dumps(self.devices).encode()
+
+        raise cherrypy.HTTPError(404, "Device not found")

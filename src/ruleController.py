@@ -1,4 +1,6 @@
 #manage and control temperature and lights of the home.
+import json
+import cherrypy
 class ConditionRule:
 
     def __init__(self, rule_name, threshold):
@@ -25,11 +27,18 @@ class LightRule(ConditionRule):
 
 
 class RuleController:
+    exposed = True
     def __init__(self):
         self.rules = {}
 
     def GET(self, *uri, **param):
-        pass
+        if len(uri) == 0:
+            if not self.rules:
+                return json.dumps({"rules": []})
+            else:
+                return json.dumps(self.rules) 
+        else:
+            raise cherrypy.HTTPError(404, "Endpoint not found")
 
     def POST(self, *uri, **param):
         pass
@@ -63,15 +72,6 @@ class RuleController:
             print(f"Rule '{rule_name}' deleted.")
         else:
             print(f"Error: Rule '{rule_name}' not found.")
-    
-    def print_rules(self):
-        if not self.rules:
-            print("No rules active")
-        else:
-            print("\n--- Active Rules ---")
-            for name, rule in self.rules.items():
-                # type(rule).__name__ is a handy trick to print the class name 
-                print(f"- {name} ({type(rule).__name__}): Threshold = {rule.threshold}")
 
     def evaluate(self, current_temp=None, current_light=None):
         print(f"\n--- Evaluating Sensor Data (Temp: {current_temp}, Light: {current_light}) ---")

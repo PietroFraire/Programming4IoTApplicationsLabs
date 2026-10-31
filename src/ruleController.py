@@ -90,7 +90,15 @@ class RuleController:
         pass
 
     def DELETE(self, *uri, **param):
-        pass
+        if len(uri) != 2 or uri[0] != "deleteRule": #Not sure this is needed
+            raise cherrypy.HTTPError(400, "Wrong URL type")
+
+        rule_name = uri[1]
+        if rule_name not in self.rules:
+            raise cherrypy.HTTPError(404, "Rule not found")
+
+        del self.rules[rule_name]
+        return json.dumps({"deleted": rule_name}) #Not possible to dump every rule? self.rules give error
 
     def add(self, rule_name, rule_type, threshold):
         if rule_type.lower() == "temperature":

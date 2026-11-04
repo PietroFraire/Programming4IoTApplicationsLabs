@@ -22,13 +22,12 @@ class TemperatureRule(ConditionRule):
         return current_temp > self.threshold
 
     def tojson(self):
-        r = {
+        
+        return json.dumps({
             "ruleName": self.rule_name,
             "ruleType": "temperature",
             "threshold": self.threshold
-        }
-
-        return json.dumps
+        })
         
     
 
@@ -38,92 +37,125 @@ class LightRule(ConditionRule):
       
         return current_light < self.threshold
 
+    def tojson(self):
+    
+        return json.dumps({
+            "ruleName": self.rule_name,
+            "ruleType": "light",
+            "threshold": self.threshold
+        })
 
 
 class RuleController:
     exposed = True
     def __init__(self):
         self.rules = {}
-        self.readable_rules = {}
+        self.readable_rules = {} 
+        # TODO: is it necessarly to have 2 data structure with the same data? 
+        # I think it is unconvinient for redundancy and discrepanciens
+        # I suggest the function getDictRules that returns the rules as a dictionary from the rules attribute
+
+
+
 
     def GET(self, *uri, **param):
         if len(uri) == 0:
             if not self.rules:
                 return json.dumps({"rules": []})
             else:
-                return json.dumps(self.rules) 
+                return json.dumps(self.getDictRules()) 
         else:
             raise cherrypy.HTTPError(404, "Endpoint not found")
 
     def POST(self, *uri, **param):
-        if len(uri) == 1:
-            if uri[0] == "addRule":
-                # {"rule": "Temperature", "rule_name": "living_room", "threshold": "45"} => example
-                data = json.loads(cherrypy.request.body.read())
 
-                rule_type = data.get("rule")
-                rule_name = data.get("rule_name")
-                threshold = float(data.get("threshold"))
+        if len(uri) != 1:
+            raise cherrypy.HTTPError(400, "Bad request")
+        
+        if uri[0] == "addRule":
+            # {"rule": "Temperature", "rule_name": "living_room", "threshold": "45"} => example TODO: change "rule" => "rule_type"? -Pietro
+            data = json.loads(cherrypy.request.body.read())
 
-                if rule_name in self.rules:
-                    raise cherrypy.HTTPError(400, "Rule name already exists")
-                else:
-                    self.add(rule_name, rule_type, threshold)
-                
-                for current_name, rule_object in self.rules.items():
-                    self.readable_rules[current_name] = {
-                        "type" : type(rule_object).__name__,
-                        "threshold" : rule_object.threshold
-                    }
+            rule_type = data.get("rule")
+            rule_name = data.get("rule_name")
+            threshold = float(data.get("threshold"))
 
-                result_dict = {
-                    "operation": uri[0],
-                    "rule_type": rule_type,
-                    "rule_name": rule_name,
-                    "threshold": threshold,
-                    "list_of_rules": self.readable_rules
+            if rule_name in self.rules:
+                raise cherrypy.HTTPError(400, "Rule name already exists")
+            else:
+                self.add(rule_name, rule_type, threshold)
+            
+            for current_name, rule_object in self.rules.items():
+                self.readable_rules[current_name] = {
+                    "type" : type(rule_object).__name__,
+                    "threshold" : rule_object.threshold
                 }
 
-                return json.dumps(result_dict)
+            result_dict = {
+                "operation": uri[0],
+                "rule_type": rule_type,
+                "rule_name": rule_name,
+                "threshold": threshold,
+                "list_of_rules": self.readable_rules
+            }
 
+            return json.dumps(result_dict)
 
-            elif uri[0] == "evaluate":
-                #{"rule_name": "living_room", "value": "45"}
-                data = json.loads(cherrypy.request.body.read())
-                rule_name = data.get("rule_name")
-                value = float(data.get("value"))
-                result = self.evaluate(rule_name, value)
-                
-                return json.dumps(result)
+        elif uri[0] == "evaluate":
+            #{"rule_name": "living_room", "value": "45"}
+            data = json.loads(cherrypy.request.body.read())
+            rule_name = data.get("rule_name")
+            value = float(data.get("value"))
+            result = self.evaluate(rule_name, value)
+            
+            return json.dumps(result) # TODO: I think we should return a json format -Pietro
 
         else:
-            return cherrypy.HTTPError(400, "Bad request") 
+            raise cherrypy.HTTPError(400, "Unknown request")
 
-    def PUT(self, *uri, **param):
+    def PUT(self, *uri, **param): # TODO: should we ask some specific uri path? -Pietro
 
-        if len(uri)==0:
+        if len(uri) != 1:
             raise cherrypy.HTTPError(400, "Invalid request")
 
-        rule_name = uri[1]
+        data = json.loads(cherrypy.request.body.read())
+        
+        rule_name = uri[0]
+        rule_type = data.get("rule")
+        new_threshold = float(data.get("threshold"))
+
         if rule_name not in self.rules:
-            raise cherrypy.HTTPError(404, "Rule not found")
+            raise cherrypy.HTTPError(404, "Rule Name not found")
 
-        body = cherrypy.request.json
+        self.update(rule_name, new_threshold)
 
-        rule = self.rules[rule_name]
-        rule.threshold = body["threshold"]
-
+        return json.dumps({
+            "operation": "update",
+            "rule_type": rule_type,
+            "rule_name": rule_name,
+            "threshold": new_threshold,
+            "list_of_rules": self.getDictRules()
+            })
 
     def DELETE(self, *uri, **param):
-        if len(uri) != 2 or uri[0] != "deleteRule": #Not sure this is needed
+        if len(uri) != 2: 
+            # or uri[0] != "deleteRule": #Not sure this is needed
+            # I removed this because I think it is not necessarly to add another word to the path, the function call is enought -Pietro 
             raise cherrypy.HTTPError(400, "Wrong URL type")
 
         rule_name = uri[1]
         if rule_name not in self.rules:
             raise cherrypy.HTTPError(404, "Rule not found")
 
-        del self.rules[rule_name]
-        return json.dumps({"deleted": rule_name}) #Not possible to dump every rule? self.rules give error
+        removed = self.rules.pop(rule_name)
+        # TODO: small fix here -Pietro
+        return json.dumps({
+            "operation": "update",
+            "rule_type": type(removed).__name__,
+            "rule_name": rule_name,
+            "threshold": removed.threshold,
+            "list_of_rules": self.getDictRules()
+            }) 
 
     def add(self, rule_name, rule_type, threshold):
         if rule_type.lower() == "temperature":
@@ -172,3 +204,13 @@ class RuleController:
         else:
             raise cherrypy.HTTPError(404, f"Rule '{rule_name}' not found")
 
+    def getDictRules(self):
+
+        r = {}
+        for current_name, rule_object in self.rules.items():
+            r[current_name] = {
+                "type" : type(rule_object).__name__,
+                "threshold" : rule_object.threshold
+            }
+
+        return r

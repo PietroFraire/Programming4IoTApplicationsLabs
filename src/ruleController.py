@@ -11,19 +11,32 @@ class ConditionRule:
     def evaluate(self):
         pass
 
+    def tojson(self):
+        pass
+
 class TemperatureRule(ConditionRule):
 
     def evaluate(self, current_temp):
-        if current_temp > self.threshold:
-            return True 
-        return False
+        
+        return current_temp > self.threshold
+
+    def tojson(self):
+        r = {
+            "ruleName": self.rule_name,
+            "ruleType": "temperature",
+            "threshold": self.threshold
+        }
+
+        return json.dumps
+        
+    
 
 class LightRule(ConditionRule):
         
     def evaluate(self, current_light):
-        if current_light < self.threshold:
-            return True
-        return False
+      
+        return current_light < self.threshold
+
 
 
 class RuleController:
@@ -44,7 +57,19 @@ class RuleController:
         pass
 
     def PUT(self, *uri, **param):
-        pass
+
+        if len(uri)==0:
+            raise cherrypy.HTTPError(400, "Invalid request")
+
+        rule_name = uri[1]
+        if rule_name not in self.rules:
+            raise cherrypy.HTTPError(404, "Rule not found")
+
+        body = cherrypy.request.json
+
+        rule = self.rules[rule_name]
+        rule.threshold = body["threshold"]
+
 
     def DELETE(self, *uri, **param):
         if len(uri) != 2 or uri[0] != "deleteRule": #Not sure this is needed

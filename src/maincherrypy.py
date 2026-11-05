@@ -35,9 +35,8 @@ if __name__=="__main__":
         }
     }
 
-    # cherrypy.tree.mount(DeviceManager(), '/', conf)
-    # cherrypy.tree.mount(DeviceManager(), '/devices', device_conf)
-    cherrypy.tree.mount(RuleController(), '/rules', rest_conf)
+    cherrypy.tree.mount(DeviceManager(), '/', conf)
+    #cherrypy.tree.mount(RuleController(), '/rules', rest_conf)
     cherrypy.config.update({'engine.autoreload.on': False})
     cherrypy.engine.start()
     cherrypy.engine.block()

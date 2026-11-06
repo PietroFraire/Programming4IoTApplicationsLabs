@@ -2,6 +2,7 @@ import cherrypy
 import os
 from deviceManager import DeviceManager
 from ruleController import RuleController 
+from bikeSharingCatalog import BikeSharingCatalog
 import os
 
 if __name__=="__main__":
@@ -35,8 +36,15 @@ if __name__=="__main__":
         }
     }
 
+    bike_conf = {
+        '/': {
+        'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+        }
+    }
+
     cherrypy.tree.mount(DeviceManager(), '/', conf)
     #cherrypy.tree.mount(RuleController(), '/rules', rest_conf)
+    cherrypy.tree.mount(BikeSharingCatalog(), '/', bike_conf)
     cherrypy.config.update({'engine.autoreload.on': False})
     cherrypy.engine.start()
     cherrypy.engine.block()

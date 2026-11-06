@@ -10,6 +10,7 @@ if __name__=="__main__":
         '/':{
                 'request.dispatch':cherrypy.dispatch.MethodDispatcher(),
                 'tools.staticdir.root': os.path.abspath(os.getcwd()),
+                'tools.response_headers.headers': [('Content-Type', 'application/json')],
                 'tools.sessions.on': True,
         }, 
 

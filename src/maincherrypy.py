@@ -12,6 +12,7 @@ if __name__=="__main__":
                 'request.dispatch':cherrypy.dispatch.MethodDispatcher(),
                 'tools.staticdir.root': os.path.abspath(os.getcwd()),
                 'tools.response_headers.headers': [('Content-Type', 'application/json')],
+                #'tools.json_out.on': True,
                 'tools.sessions.on': True,
         }, 
 
@@ -44,6 +45,7 @@ if __name__=="__main__":
     }
 
     cherrypy.tree.mount(DeviceManager(), '/', conf)
+    cherrypy.tree.mount(BikeSharingCatalog(), '/bikeSharing', conf)
     #cherrypy.tree.mount(RuleController(), '/rules', rest_conf)
     cherrypy.tree.mount(BikeSharingCatalog(), '/', bike_conf)
     cherrypy.config.update({'engine.autoreload.on': False})

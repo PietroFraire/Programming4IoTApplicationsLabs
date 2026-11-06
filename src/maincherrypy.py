@@ -43,7 +43,7 @@ if __name__=="__main__":
         }
     }
 
-    cherrypy.tree.mount(DeviceManager(), '/', conf)
+    #cherrypy.tree.mount(DeviceManager(), '/', conf)
     #cherrypy.tree.mount(RuleController(), '/rules', rest_conf)
     cherrypy.tree.mount(BikeSharingCatalog(), '/', bike_conf)
     cherrypy.config.update({'engine.autoreload.on': False})

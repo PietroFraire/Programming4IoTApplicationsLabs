@@ -111,11 +111,9 @@ class FileManager:
                 "servicesDetails": servicesDetails,
                 "lastUpdate": current_time
                 }
-            self.catalog["devicesList"].append(new_dict)
-        
+            self.catalog["devicesList"].append(new_dict)       
 
-        
-
+            
 if __name__ == "__main__":
     manager = FileManager()
 

@@ -3,51 +3,37 @@ import os
 from deviceManager import DeviceManager
 from ruleController import RuleController 
 from bikeSharingCatalog import BikeSharingCatalog
-import os
 
-if __name__=="__main__":
-    conf={
-
-        '/':{
-                'request.dispatch':cherrypy.dispatch.MethodDispatcher(),
-                'tools.staticdir.root': os.path.abspath(os.getcwd()),
-                'tools.response_headers.headers': [('Content-Type', 'application/json')],
-                #'tools.json_out.on': True,
-                'tools.sessions.on': True,
-        }, 
-
-        '/css':{
-                'tools.staticdir.on': True,
-                'tools.staticdir.dir':'./css'
-        }, 
-        '/js':{
-                'tools.staticdir.on': True,
-                'tools.staticdir.dir':'./js'
-        }, 
-    }
-
-    device_conf = {
-        '/': {
-        'request.dispatch': cherrypy.dispatch.MethodDispatcher()
-        }
-    }
-
+if __name__ == "__main__":
     rest_conf = {
         '/': {
-        'request.dispatch': cherrypy.dispatch.MethodDispatcher()
+            'request.dispatch': cherrypy.dispatch.MethodDispatcher()
         }
     }
 
-    bike_conf = {
-        '/': {
-        'request.dispatch': cherrypy.dispatch.MethodDispatcher()
-        }
+    static_conf = {
+        '/css': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': os.path.abspath('./css')
+        }, 
+        '/js': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': os.path.abspath('./js')
+        }, 
     }
 
-    #cherrypy.tree.mount(DeviceManager(), '/', conf)
-    cherrypy.tree.mount(BikeSharingCatalog(), '/bikeSharing', conf)
-    #cherrypy.tree.mount(RuleController(), '/rules', rest_conf)
-    cherrypy.tree.mount(BikeSharingCatalog(), '/', bike_conf)
-    cherrypy.config.update({'engine.autoreload.on': False})
+    cherrypy.tree.mount(DeviceManager(), '/device', rest_conf)
+    cherrypy.tree.mount(RuleController(), '/rules', rest_conf)
+    cherrypy.tree.mount(BikeSharingCatalog(), '/bikeSharing', rest_conf)
+
+    cherrypy.tree.mount(None, '/', static_conf)
+
+    cherrypy.config.update({
+        'engine.autoreload.on': False,
+        'server.socket_host': 'localhost',
+        'server.socket_port': 8080
+    })
+    
+    print("Server avviato correttamente su http://localhost:8080")
     cherrypy.engine.start()
     cherrypy.engine.block()

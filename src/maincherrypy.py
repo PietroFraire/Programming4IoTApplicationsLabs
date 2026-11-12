@@ -3,6 +3,7 @@ import os
 from deviceManager import DeviceManager
 from ruleController import RuleController 
 from bikeSharingCatalog import BikeSharingCatalog
+from fileManager import FileManager
 
 if __name__ == "__main__":
     rest_conf = {
@@ -22,6 +23,7 @@ if __name__ == "__main__":
         }, 
     }
 
+    cherrypy.tree.mount(FileManager(), '/fileManager', rest_conf)
     cherrypy.tree.mount(DeviceManager(), '/device', rest_conf)
     cherrypy.tree.mount(RuleController(), '/rules', rest_conf)
     cherrypy.tree.mount(BikeSharingCatalog(), '/bikeSharing', rest_conf)

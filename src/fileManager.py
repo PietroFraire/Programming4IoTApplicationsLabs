@@ -1,4 +1,5 @@
 import json
+import cherrypy
 from datetime import datetime
 
 class Device:
@@ -25,6 +26,8 @@ class Device:
         
 
 class FileManager:
+    exposed = True
+
     def __init__(self):
         self.filepath = "../Data/catalog.json"
         with open(self.filepath, "r") as file:
@@ -114,130 +117,127 @@ class FileManager:
             self.catalog["devicesList"].append(new_dict)       
 
 
-if __name__ == "__main__":
-    manager = FileManager()
-
-    while True:
-        # 1. Print the menu options
-        print("\n--- Device Manager Menu ---")
-        print("1. Search by Name")
-        print("2. Search by ID")
-        print("3. Search by Service")
-        print("4. Search by Measure Type")
-        print("5. Insert device")
-        print("6. Print all devices")
-        print("7. Save and Exit")
-
-
-        choice = input("\nEnter your choice (1-7): ").strip()
-
-        match choice:
-            case '1':
-                device_name = input("Enter device name: ").strip()
-                result = manager.searchByName(device_name)
-                if result is not None:
-                    print("Device found: ")
-                    print(result)
-                else:
-                    print(f"Sorry, no device named '{device_name}' was found.")
-  
-            case '2':
-                try:
-                    device_id = int(input("Enter device id: ").strip())
-                    result = manager.searchByID(device_id)
-                    if result is not None:
-                        print("Device found: ")
-                        print(result)
-                    else:
-                        print(f"Sorry, no device id '{device_id}' was found.")
-                except ValueError:
-                    print("Error: Please enter a valid integer.")
-
-            case '3':
-                service = input("Enter service: ").strip()
-                listdev = manager.searchByService(service)
-                print(listdev if listdev else f"No device with this service type {service}")
-
-            case '4':
-                measureType = input("Enter measure type: ").strip()
-                listdev = manager.searchByMeasureType(measureType)
-                print(listdev if listdev else f"No device with this measure type {measureType}")
-            
-            case '5':
-                try:
-                    device_ID = int(input("Enter device ID: ").strip())
-                    
-                    existing = manager.searchByID(device_ID)
-                    
-                    if existing:
-                        print(f"\n--- Updating Existing Device: {existing.deviceName} ---")
-                        print("(Press ENTER to keep the current value)")
-                        
-                        # 2. Use 'or' to keep the old data if the user just presses Enter
-                        device_name = input(f"Enter name [{existing.deviceName}]: ").strip() or existing.deviceName
-                        
-                        m_input = input(f"Enter measuring types [{','.join(existing.measureType)}]: ").strip()
-                        measureType = [m.strip() for m in m_input.split(",")] if m_input else existing.measureType
-                        
-                        s_input = input(f"Enter available services [{','.join(existing.availableServices)}]: ").strip()
-                        availableServices = [s.strip().upper() for s in s_input.split(",")] if s_input else existing.availableServices
-
-                        if s_input:
-                            service_details = []
-                            for service in availableServices:
-                                if service == "MQTT":
-                                    topics_input = input("Enter MQTT topics (separated by commas): ")
-                                    topics_list = [t.strip() for t in topics_input.split(",")]
-                                    service_details.append({"serviceType": "MQTT", "topic": topics_list})
-                                elif service == "REST":
-                                    ip_input = input("Enter REST service IP (e.g. 192.1.1.1:8080): ").strip()
-                                    service_details.append({"serviceType": "REST", "serviceIP": ip_input})
-                        else:
-                            service_details = existing.servicesDetails
-                    
-                    else:
-                        print(f"\n--- Creating New Device: {device_ID} ---")
-                        device_ID = int(input("Enter device ID: ").strip())
-                        device_name = input("Enter the device name: ").strip()
-
-                        measures_input = input("Enter measuring types (separated by commas, e.g. Temperature,Humidity): ")
-                        measureType = [m.strip() for m in measures_input.split(",")]
-
-                        services_input = input("Enter available services (separated by commas, e.g. MQTT,REST): ")
-                        availableServices = [s.strip().upper() for s in services_input.split(",")]
-
-                        service_details = []
-                        print("--- Service Details Configuration ---")
-                        for service in availableServices:
-                                if service == "MQTT":
-                                    topics_input = input("Enter MQTT topics (separated by commas): ")
-                                    topics_list = [t.strip() for t in topics_input.split(",")]
-                                    service_details.append({
-                                        "serviceType": "MQTT", 
-                                        "topic": topics_list
-                                    })
-                                    
-                                elif service == "REST":
-                                    ip_input = input("Enter REST service IP (e.g. 192.1.1.1:8080): ").strip()
-                                    service_details.append({
-                                        "serviceType": "REST", 
-                                        "serviceIP": ip_input
-                                    })
-
-                    manager.insertDevice(device_ID, device_name, measureType, availableServices, service_details)
-                    print(f"Device {device_ID} successfully processed!")
-
-                except ValueError:
-                    print("the ID must be an integer")
-
-            
-            case '6':
-                print(manager.printAll())
-
-            case '7':
-                manager.save_catalog()
-                print("Catalog saved successfully. Exiting program...")
-                break
+    def GET(self, *uri, **param):
+        cherrypy.response.headers['Content-Type'] = 'application/json'
         
-            case _:
-                print("Invalid choice. Please enter a number between 1 and 7.")
+        if len(uri) > 0:
+            raise cherrypy.HTTPError(404, "Endpoint not found")
+
+        if not param:
+            return self.printAll().encode('utf-8')
+
+        if 'id' in param:
+            res = self.searchByID(param['id'])
+            if not res:
+                raise cherrypy.HTTPError(404, "Device not found")
+            device_dict = {
+                "deviceID": res.deviceID, "deviceName": res.deviceName,
+                "measureType": res.measureType, "availableServices": res.availableServices,
+                "servicesDetails": res.servicesDetails, "lastUpdate": res.lastUpdate
+            }
+            return json.dumps(device_dict).encode('utf-8')
+
+        elif 'sensname' in param:
+            res = self.searchByName(param['sensname'])
+            if not res:
+                raise cherrypy.HTTPError(404, "Device not found")
+            device_dict = {
+                "deviceID": res.deviceID, "deviceName": res.deviceName,
+                "measureType": res.measureType, "availableServices": res.availableServices,
+                "servicesDetails": res.servicesDetails, "lastUpdate": res.lastUpdate
+            }
+            return json.dumps(device_dict).encode('utf-8')
+
+        elif 'service' in param:
+            results = self.searchByService(param['service'])
+            dev_list = [{
+                "deviceID": r.deviceID, "deviceName": r.deviceName,
+                "measureType": r.measureType, "availableServices": r.availableServices,
+                "servicesDetails": r.servicesDetails, "lastUpdate": r.lastUpdate
+            } for r in results]
+            return json.dumps(dev_list).encode('utf-8')
+
+        elif 'measure' in param:
+            results = self.searchByMeasureType(param['measure'])
+            dev_list = [{
+                "deviceID": r.deviceID, "deviceName": r.deviceName,
+                "measureType": r.measureType, "availableServices": r.availableServices,
+                "servicesDetails": r.servicesDetails, "lastUpdate": r.lastUpdate
+            } for r in results]
+            return json.dumps(dev_list).encode('utf-8')
+
+        else:
+            raise cherrypy.HTTPError(400, "Invalid query parameters")
+
+    def POST(self, *uri, **_params):
+        cherrypy.response.headers['Content-Type'] = 'application/json'
+        if len(uri) > 0:
+            raise cherrypy.HTTPError(400, "Invalid request path")
+        
+        body = cherrypy.request.body.read()
+        if not body:
+            raise cherrypy.HTTPError(400, "Missing request body")
+        
+        data = json.loads(body)
+        
+        # Sfruttiamo il metodo insertDevice già scritto che gestisce controllo ID e data lastUpdate
+        self.insertDevice(
+            data.get("deviceID"),
+            data.get("deviceName"),
+            data.get("measureType"),
+            data.get("availableServices"),
+            data.get("servicesDetails")
+        )
+        
+        # Aggiorniamo la lista in memoria degli oggetti Device
+        self.devicelist = self.loading_devices()
+        
+        cherrypy.response.status = 201
+        return json.dumps(self.catalog).encode('utf-8')
+
+    def PUT(self, *uri, **param):
+        cherrypy.response.headers['Content-Type'] = 'application/json'
+        # Utilizziamo l'URI per passare l'ID (es. /fileManager/1) oppure sfruttiamo la POST/insertDevice
+        if len(uri) != 1:
+            raise cherrypy.HTTPError(400, "Invalid URL. Use /fileManager/DEVICE_ID")
+        
+        deviceID = uri[0]
+        existing = self.searchByID(deviceID)
+        if not existing:
+            raise cherrypy.HTTPError(404, "Device not found")
+            
+        body = cherrypy.request.body.read()
+        if not body:
+            raise cherrypy.HTTPError(400, "Missing request body")
+            
+        body_data = json.loads(body)
+        
+        # Aggiorna usando i dati del body (mantenendo quelli vecchi se non specificati)
+        self.insertDevice(
+            deviceID,
+            body_data.get("deviceName", existing.deviceName),
+            body_data.get("measureType", existing.measureType),
+            body_data.get("availableServices", existing.availableServices),
+            body_data.get("servicesDetails", existing.servicesDetails)
+        )
+        
+        self.devicelist = self.loading_devices()
+        return json.dumps(self.catalog).encode('utf-8')
+
+    def DELETE(self, *uri, **param):
+        cherrypy.response.headers['Content-Type'] = 'application/json'
+        if len(uri) != 1:
+            raise cherrypy.HTTPError(400, "Invalid URL. Use /fileManager/DEVICE_ID")
+        
+        target_id = uri[0]
+        existing = self.searchByID(target_id)
+        if not existing:
+            raise cherrypy.HTTPError(404, "Device not found")
+
+        # Rimuove sia dalla lista in memoria che dal catalogo dict
+        self.devicelist = [d for d in self.devicelist if str(d.deviceID) != str(target_id)]
+        self.catalog["devicesList"] = [d for d in self.catalog["devicesList"] if str(d["deviceID"]) != str(target_id)]
+        
+        self.save_catalog()
+            
+        return json.dumps(self.catalog).encode('utf-8')

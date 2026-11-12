@@ -22,7 +22,40 @@ class RuleClient:
         pass
 
     def delete(self):
-        pass
+        print("\n--- Delete a rule ---")
+        rule_name = input("Insert the name of the rule that you want to delete: ").strip()
+        
+        if not rule_name:
+            print("Error: missing name.")
+            return
+
+        url = f"{URL}/rules/{rule_name}"
+
+        try:
+            response = requests.delete(url)
+            
+            if response.status_code == 200:
+                data = response.json()
+                print("\n Success: rule delete!")
+                print(f"  - Rule name: {data.get('rule_name')}")
+                print(f"  - Type: {data.get('rule_type')}")
+                print(f"  - Previous threshold: {data.get('threshold')}")
+                
+                remaining_rules = data.get('list_of_rules', {})
+                print(f"   - Remaining rule ({len(remaining_rules)}):")
+                if remaining_rules:
+                    for name, details in remaining_rules.items():
+                        print(f"[{details.get('type')}] {name} -> Soglia: {details.get('threshold')}")
+                else:
+                    print("No rules remaining.")
+                    
+            elif response.status_code == 404:
+                print(f"\n Error: the rule '{rule_name}' isn't find on the server.")
+            else:
+                print(f"\n Error of server (Code {response.status_code}): {response.text}")
+                
+        except requests.exceptions.ConnectionError:
+            print("\n Error of connession: Impossible to reach the server.")
 
 if __name__ == "__main__":
 

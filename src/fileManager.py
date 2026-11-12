@@ -113,7 +113,7 @@ class FileManager:
                 }
             self.catalog["devicesList"].append(new_dict)       
 
-            
+
 if __name__ == "__main__":
     manager = FileManager()
 
@@ -212,14 +212,14 @@ if __name__ == "__main__":
                                 if service == "MQTT":
                                     topics_input = input("Enter MQTT topics (separated by commas): ")
                                     topics_list = [t.strip() for t in topics_input.split(",")]
-                                    serivce_details.append({
+                                    service_details.append({
                                         "serviceType": "MQTT", 
                                         "topic": topics_list
                                     })
                                     
                                 elif service == "REST":
                                     ip_input = input("Enter REST service IP (e.g. 192.1.1.1:8080): ").strip()
-                                    serivce_details.append({
+                                    service_details.append({
                                         "serviceType": "REST", 
                                         "serviceIP": ip_input
                                     })

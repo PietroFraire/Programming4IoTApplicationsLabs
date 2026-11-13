@@ -55,10 +55,11 @@ class RuleController:
 
     def GET(self, *uri, **param):
         if len(uri) == 0:
-            if not self.rules:
+            """ if not self.rules:
                 return json.dumps({"rules": []})
             else:
-                return json.dumps(self.getDictRules()) 
+                return json.dumps(self.getDictRules())  """
+            return json.dumps({"list_of_rules": self.getDictRules()})
         else:
             raise cherrypy.HTTPError(404, "Endpoint not found")
 

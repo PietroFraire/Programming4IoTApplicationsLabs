@@ -2,8 +2,8 @@ import json
 import cherrypy
 import requests
 
-URL = "http://127.0.0.1:8080"
-#URL = "http://localhost:8080"
+#URL = "http://127.0.0.1:8080"
+URL = "http://localhost:8080"
 
 class RuleClient:
 
